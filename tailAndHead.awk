@@ -4,6 +4,7 @@ function printing_lines(numberLines) {
     for (i=0; i<numberLines; i++) {
         printf "%s", "-"
     }
+
     printf "\n"
 }
 
@@ -14,6 +15,7 @@ function print_arr(starting, ending) {
             printing_lines(80);
             exit;
         }
+
         printf "%s\n", all[i];
     }
 }
@@ -21,6 +23,7 @@ function print_arr(starting, ending) {
 BEGIN {
     printing_lines(80);
     check=0
+    
     for (i=0; i<ARGC; i++) {
         if (((ARGC-1) == 2) && ARGV[i+1] ~ /[0-9]{1,}/ && ARGV[i+2] ~ /[0-9]{1,}/  ) {
             start=ARGV[i+1]; delete ARGV[i+1];
@@ -71,10 +74,10 @@ END {
     } else if (count_option == 1) {
         for (i=1; i<=FNR; i++) {
             if (i == FNR) {
-                printf "%s. %s",i, all[i];
+                printf "%s. %s",i ,all[i];
                 break;
             }
-            printf "%s. %s\n",i, all[i];
+            printf "%s. %s\n",i ,all[i];
         }
     }
     

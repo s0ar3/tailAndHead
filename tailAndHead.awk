@@ -2,9 +2,9 @@
 
 function printLines(number) {
     for (i=1;i<=number;i++) {
-        printf "%s", "-"
+        printf "%s", "-";
     }
-    printf "\n"
+    printf "\n";
 }
 
 function printArr(starting,ending) {
@@ -15,10 +15,24 @@ function printArr(starting,ending) {
     printLines(80);
 }
 
+function range_corection() {
+    if (end > FNR) {
+        end=FNR;
+    } else if (start > FNR) {
+        start=1;
+    }
+}
+
 BEGIN {
     needed_lines=0;
     for (i=1; i<=ARGC;i++) {
         switch ( ARGV[i] ) {
+            case "--pipe" :
+                start=ARGV[i+1];
+                end=ARGV[i+2];
+                option="--pipe";
+                delete ARGV[i]; delete ARGV[i+1]; delete ARGV[i+2];
+                break;
             case "--range" :
                 start=ARGV[i+1];
                 end=ARGV[i+2];
@@ -51,14 +65,14 @@ BEGIN {
     }    
 }
 
-{ elements[FNR]=$0 }
+{ 
+    elements[FNR]=$0;
+}
 
 END {
     switch (option) {
         case "--range" :
-            if (end > FNR) {
-                end=FNR
-            }
+            range_corection();
             printArr(start,end);
             break;
         case "--last" :
@@ -79,13 +93,17 @@ END {
             break;
         case "--first" :
             printArr(start,end);
-            break;    
+            break;
+        case "--pipe" :
+            range_corection();
+            printArr(start,end);
+            break;         
         case "none" :
             printLines(80);
             printf "\033[31m%s\033[0m\n", "Options we can use: -> (--range for range, like ./tailAndHead.awk --range 2 5 given_file where 2 and 5 are start and end lines)\n \
                    -> (--last for last lines, like ./tailAndHead.awk --last 2 given_file, where 2 are the last two lines)\n \
                    -> (-first same as above but first lines like --first 5 where 5 are 5 first lines) \n \
-                   -> (last options can be used to parse a command output and extract range of lines using command | and script with range input)";
+                   -> (--pipe this option can be used to parse a command output and extract range of lines using command | and script with range input)";
             printLines(80);
             break;    
     }

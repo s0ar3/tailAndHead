@@ -1,96 +1,92 @@
 #!/usr/bin/awk -f
 
-function printing_lines(numberLines) {
-    for (i=0; i<numberLines; i++) {
+function printLines(number) {
+    for (i=1;i<=number;i++) {
         printf "%s", "-"
     }
-
     printf "\n"
 }
 
-function print_arr(starting, ending) {
+function printArr(starting,ending) {
+    printLines(80);
     for (i=starting; i<=ending; i++) {
-        if (i == ending) {
-            printf "%s\n", all[i];
-            printing_lines(80);
-            exit;
-        }
-
-        printf "%s\n", all[i];
+        printf "%s\n", elements[i];
     }
+    printLines(80);
 }
 
 BEGIN {
-    printing_lines(80);
-    check=0
-    
-    for (i=0; i<ARGC; i++) {
-        if (((ARGC-1) == 2) && ARGV[i+1] ~ /[0-9]{1,}/ && ARGV[i+2] ~ /[0-9]{1,}/  ) {
-            start=ARGV[i+1]; delete ARGV[i+1];
-            end=ARGV[i+2]; delete ARGV[i+2];
-            check=1
-        } else if (ARGV[i] == "-l") {
-            given_option="1"; delete ARGV[i];
-            desired_lines=ARGV[i+1]; delete ARGV[i+1];
-            check=1
-        } else if (ARGV[i] == "-r") {
-            start=ARGV[i+1]; delete ARGV[i];
-            end=ARGV[i+2]; delete ARGV[i+1];
-            delete ARGV[i+2];
-            check=1
-        } else if (ARGV[i] == "-f") {
-            start=1; delete ARGV[i];
-            end=ARGV[i+1]; delete ARGV[i+1];
-            check=1
-        } 
-    }
-
-    for (k in ARGV) {
-        if (ARGV[k] == "--count") {
-            count_option=1
-            check=1
-            delete ARGV[k]
+    needed_lines=0;
+    for (i=1; i<=ARGC;i++) {
+        switch ( ARGV[i] ) {
+            case "--range" :
+                start=ARGV[i+1];
+                end=ARGV[i+2];
+                option="--range";
+                delete ARGV[i]; delete ARGV[i+1]; delete ARGV[i+2];
+                break;
+            case "--last" :
+                needed_lines=ARGV[i+1];
+                option="--last";
+                delete ARGV[i]; delete ARGV[i+1];
+                break;
+            case "--count" :
+                option="--count";
+                delete ARGV[i];
+                break;
+            case "--first" :
+                option="--first";
+                start=1; end=ARGV[i+1];
+                delete ARGV[i]; delete ARGV[i+1];
+                break;
+            default :
+                option="none";
+                delete ARGV[i];
+                for (j=i+1; j<=ARGC;j++) {
+                    delete ARGV[j];
+                }
+                exit;
         }
-    }
+        break;
+    }    
+}
 
-    if (check == 0 ) {
-        printf "\n\033[31m%s\033[0m\n", "Options we can use: -> (-r for range, like ./tailAndHead.awk given_file -r 2 5 where 2 and 5 are start and end lines)\n \
-                   -> (-l for last lines, like ./tailAndHead.awk given_file -l 2, where 2 are the last two lines)\n \
-                   -> (-f same as above but first lines like -f 5 where 5 are 5 first lines) \n \
-                   -> (last options can be used to parse a command output and extract range of lines using command | and script with range input)";
-    }
-}   
-
-{ all[FNR]=$0 }
+{ elements[FNR]=$0 }
 
 END {
-    if (given_option == "1") {
-        if (desired_lines > FNR) {
-            printf "%s %s\n", "\033[31mERROR\033[0m - the number of lines in the standard input is", FNR
-        } else if (last_lines < FNR) {
-            last_lines=(FNR - (desired_lines-1));
-            print_arr(last_lines, FNR);
-        } 
-    } else if (count_option == 1) {
-        for (i=1; i<=FNR; i++) {
-            if (i == FNR) {
-                printf "%s. %s",i ,all[i];
-                break;
+    switch (option) {
+        case "--range" :
+            if (end > FNR) {
+                end=FNR
             }
-            printf "%s. %s\n",i ,all[i];
-        }
+            printArr(start,end);
+            break;
+        case "--last" :
+            if (number_lines > FNR) {
+                printf "\033[31m%s %d\033[0m\n", "Number of lines in standard input",FNR;
+                printArr(1, FNR);
+            } else if (number_lines < FNR) {
+                lines_printing=(FNR-(needed_lines-1));
+                printArr(lines_printing,FNR);
+            }
+            break;
+        case "--count" :
+            printLines(80);
+            for (i in elements) {
+                printf "%s. %s\n",i , elements[i];
+            }    
+            printLines(80);
+            break;
+        case "--first" :
+            printArr(start,end);
+            break;    
+        case "none" :
+            printLines(80);
+            printf "\033[31m%s\033[0m\n", "Options we can use: -> (--range for range, like ./tailAndHead.awk --range 2 5 given_file where 2 and 5 are start and end lines)\n \
+                   -> (--last for last lines, like ./tailAndHead.awk --last 2 given_file, where 2 are the last two lines)\n \
+                   -> (-first same as above but first lines like --first 5 where 5 are 5 first lines) \n \
+                   -> (last options can be used to parse a command output and extract range of lines using command | and script with range input)";
+            printLines(80);
+            break;    
     }
-    
-    if (start > FNR) {
-        printf "\n\033[31mERROR Number of lines detected in standard input/file is %d.\033[0m\n\
-***We need another interval from you but starting line needs to be lower than size detected and mentioned above and not bellow 1. \n", length(all);
-    } else {
-        if (end > FNR) {
-            printf "\033[31m%s %d\033[0m\n", "**Number of lines:", FNR
-            print_arr(start, FNR);
-        } else {
-            print_arr(start, end);
-        }
-    }
-    printing_lines(80);
 }

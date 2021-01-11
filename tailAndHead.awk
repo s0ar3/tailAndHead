@@ -23,40 +23,40 @@ function range_corection() {
     }
 }
 
+function minify_after_care(choose,strt,nd,del_num) {
+    start=strt;
+    end=nd;
+    option=choose;
+    if (del_num == 3) {
+        delete ARGV[i]; delete ARGV[i+1]; delete ARGV[i+2];
+    } else if (del_num == 2) {
+        delete ARGV[i]; delete ARGV[i+1];
+    } else if (del_num == 1) {
+        delete ARGV[i];
+    }
+}
+
 BEGIN {
-    needed_lines=0;
-    for (i=1; i<=ARGC;i++) {
+    for (i=1; i<=ARGC; i++) {
         switch ( ARGV[i] ) {
             case "--pipe" :
-                start=ARGV[i+1];
-                end=ARGV[i+2];
-                option="--pipe";
-                delete ARGV[i]; delete ARGV[i+1]; delete ARGV[i+2];
+                minify_after_care("--pipe",ARGV[i+1],ARGV[i+2],3);
                 break;
             case "--range" :
-                start=ARGV[i+1];
-                end=ARGV[i+2];
-                option="--range";
-                delete ARGV[i]; delete ARGV[i+1]; delete ARGV[i+2];
+                minify_after_care("--range",ARGV[i+1],ARGV[i+2],3);
                 break;
             case "--last" :
-                needed_lines=ARGV[i+1];
-                option="--last";
-                delete ARGV[i]; delete ARGV[i+1];
+                minify_after_care("--last",1,ARGV[i+1],2);
                 break;
             case "--count" :
-                option="--count";
-                delete ARGV[i];
+                minify_after_care("--count",1,2,1);
                 break;
             case "--first" :
-                option="--first";
-                start=1; end=ARGV[i+1];
-                delete ARGV[i]; delete ARGV[i+1];
+                minify_after_care("--first",1,ARGV[i+1],2)
                 break;
             default :
                 option="none";
-                delete ARGV[i];
-                for (j=i+1; j<=ARGC;j++) {
+                for (j=1; j<=ARGC;j++) {
                     delete ARGV[j];
                 }
                 exit;
@@ -76,11 +76,11 @@ END {
             printArr(start,end);
             break;
         case "--last" :
-            if (number_lines > FNR) {
-                printf "\033[31m%s %d\033[0m\n", "Number of lines in standard input",FNR;
+            if (end > FNR) {
                 printArr(1, FNR);
-            } else if (number_lines < FNR) {
-                lines_printing=(FNR-(needed_lines-1));
+                printf "\033[31m%s %d %s\033[0m\n\n", "Number of lines in standard input is",FNR,"and entire output is displayed."; 
+            } else if (end < FNR) {
+                lines_printing=(FNR-(end-1));
                 printArr(lines_printing,FNR);
             }
             break;
@@ -103,7 +103,9 @@ END {
             printf "\033[31m%s\033[0m\n", "Options we can use: -> (--range for range, like ./tailAndHead.awk --range 2 5 given_file where 2 and 5 are start and end lines)\n \
                    -> (--last for last lines, like ./tailAndHead.awk --last 2 given_file, where 2 are the last two lines)\n \
                    -> (-first same as above but first lines like --first 5 where 5 are 5 first lines) \n \
-                   -> (--pipe this option can be used to parse a command output and extract range of lines using command | and script with range input)";
+                   -> (--pipe this option can be used to parse a command output and extract range of lines using command | and script with range input)\n \
+                   -> (--count with the following pattern --count file or using input from another command only --count \n \
+                   -> (all options used with a file as input can be used also on an input from command send it through pipe.";
             printLines(80);
             break;    
     }

@@ -13,6 +13,7 @@ function printArr(starting,ending) {
         printf "%s\n", elements[i];
     }
     printLines(80);
+    printf "\033[31m%s %d.\033[0m\n\n", "Number of lines processed from standard input/file is", FNR
 }
 
 function range_corection() {
@@ -69,9 +70,7 @@ BEGIN {
     }    
 }
 
-{ 
-    elements[FNR]=$0;
-}
+{ elements[FNR]=$0; }
 
 END {
     switch (option) {
@@ -82,7 +81,6 @@ END {
         case "--last" :
             if (end > FNR) {
                 printArr(1, FNR);
-                printf "\033[31m%s %d %s\033[0m\n\n", "Number of lines in standard input is",FNR,"and entire output is displayed."; 
             } else if (end < FNR) {
                 lines_printing=(FNR-(end-1));
                 printArr(lines_printing,FNR);

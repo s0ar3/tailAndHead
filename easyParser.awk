@@ -45,7 +45,7 @@ function minify_after_care(choose,strt,nd,del_num) {
 
 BEGIN {
     for (i=1; i<=ARGC; i++) {
-        switch ( ARGV[i] ) {
+        switch (ARGV[i]) {
             case "--pipe" :
                 minify_after_care("--pipe",ARGV[i+1],ARGV[i+2],3);
                 break;

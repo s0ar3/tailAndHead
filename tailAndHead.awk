@@ -23,16 +23,22 @@ function range_corection() {
     }
 }
 
+function delete_arg(how_many) {
+    for (k=1; k<=how_many;k++) {
+        delete ARGV[k]
+    }
+}
+
 function minify_after_care(choose,strt,nd,del_num) {
     start=strt;
     end=nd;
     option=choose;
     if (del_num == 3) {
-        delete ARGV[i]; delete ARGV[i+1]; delete ARGV[i+2];
+        delete_arg(3);
     } else if (del_num == 2) {
-        delete ARGV[i]; delete ARGV[i+1];
+        delete_arg(2);
     } else if (del_num == 1) {
-        delete ARGV[i];
+        delete_arg(1);
     }
 }
 
@@ -56,9 +62,7 @@ BEGIN {
                 break;
             default :
                 option="none";
-                for (j=1; j<=ARGC;j++) {
-                    delete ARGV[j];
-                }
+                delete_arg(ARGC);
                 exit;
         }
         break;

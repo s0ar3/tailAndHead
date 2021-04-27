@@ -41,7 +41,7 @@ function printArr(starting,ending) {
         printf "%s\n", elements[i];
     }
     printLines(80);
-    printf "\033[31m%s %d.\033[0m\n\n", "Number of lines processed from standard input/file is", FNR
+    printf "\033[31m%s %d\033[0m\n\n", "Number of lines in standard input/file:", FNR
 }
 
 function range_corection() {

@@ -9,8 +9,8 @@ function printLines(number) {
 
 function printErr() {
     printLines(80);
-            printf "\033[31m%s\033[0m\n", "Options we can use: -> (--range for range, like ./tailAndHead.awk --range 2 5 given_file where 2 and 5 are start and end lines)\n \
-                   -> (--last for last lines, like ./tailAndHead.awk --last 2 given_file, where 2 are the last two lines)\n \
+            printf "\033[31m%s\033[0m\n", "Options we can use: -> (--range for range, like ./easyParser.awk --range 2 5 given_file where 2 and 5 are start and end lines)\n \
+                   -> (--last for last lines, like ./easyParser.awk --last 2 given_file, where 2 are the last two lines)\n \
                    -> (-first same as above but first lines like --first 5 where 5 are 5 first lines) \n \
                    -> (--count with the following pattern --count file or using input from another command only --count \n \
                    -> (all options used with a file as input can be used also on an input from command send it through pipe.";
